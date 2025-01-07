@@ -438,7 +438,7 @@ const postimage = multer({storage: storage});
 		  console.log('received request', req.body);
 		  console.log('received files', req.files);
 	  
-		  const { title, description, tag, user } = req.body;
+		  const { title, description, tag, user, imagepath } = req.body;
 
 		  // Validate user ID
 		  if (!ObjectId.isValid(user)) {
