@@ -464,7 +464,7 @@ const postimage = multer({storage: storage});
 			description,
 			tag: existingTag._id,
 			user,
-			image: FILE_PATH + req.files[0].filename,
+			image: imagepath,
 			views: 0
 		  });
 	  
