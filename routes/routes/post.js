@@ -35,7 +35,7 @@ const postimage = multer({storage: storage});
 			res.json(post)
 			
 		}catch(err){
-			res.status(500).send(err.message)
+			res.status(500).send(err.msg)
 		}
 	});
 
@@ -51,14 +51,14 @@ const postimage = multer({storage: storage});
 			.lean();
 
 			if (!post) {
-			  return res.status(404).json({ message: 'Post not found' });
+			  return res.status(404).json({ msg: 'Post not found' });
 			};
 			console.log('Post:', post);
 			console.log(post.comments)
             res.json(post);
 		}catch(err){
 			
-			res.status(500).send(err.message)
+			res.status(500).send(err.msg)
 		}
 	});
 	
@@ -78,7 +78,7 @@ const postimage = multer({storage: storage});
 
             res.json(post)
 		}catch(err){
-			res.status(500).send(err.message)
+			res.status(500).send(err.msg)
 		}
 	});
     
@@ -91,7 +91,7 @@ const postimage = multer({storage: storage});
 			res.json({msg:"Post deleted"})
 			
 		}catch(err){
-			res.status(500).send(err.message)
+			res.status(500).send(err.msg)
 		}
 	});
 	  
@@ -133,7 +133,7 @@ const postimage = multer({storage: storage});
 		  await post.save();
 		  res.json(post.likes);
 		} catch (err) {
-		  console.error(err.message);
+		  console.error(err.msg);
 		  res.status(500).send({ msg: "Internal server error" });
 		}
 	  });	  
@@ -168,7 +168,7 @@ const postimage = multer({storage: storage});
 		  res.json(post.likes);
 	  
 		} catch (err) {
-		  console.log(err.message);
+		  console.log(err.msg);
 		  res.status(500).send({ msg: "Internal server error" });
 		}
 	  });
@@ -199,7 +199,7 @@ const postimage = multer({storage: storage});
 			res.json(post);
 			console.log(post);
 		} catch (err) {
-			console.log(err.message);
+			console.log(err.msg);
 			res.status(500).send({ msg: "internal server error" });
 		}
 	});
@@ -216,7 +216,7 @@ const postimage = multer({storage: storage});
 
         res.json(allComments);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
     });
 
@@ -226,7 +226,7 @@ const postimage = multer({storage: storage});
 		let post = await Post.findById(id)
 		res.json(post);
 		} catch (error) {
-		  res.status(500).send(error.message);
+		  res.status(500).send(error.msg);
 		}
 	})
 	
@@ -264,7 +264,7 @@ const postimage = multer({storage: storage});
 			await post.save();
 			res.json(post);
 		} catch (err) {
-			console.log(err.message);
+			console.log(err.msg);
 			res.status(500).send({ msg: "Internal server error" });
 		}
 	});
@@ -303,7 +303,7 @@ const postimage = multer({storage: storage});
 			await post.save();
 			res.json(comment.likes);
 		} catch (err) {
-			console.error(err.message);
+			console.error(err.msg);
 			res.status(500).send({ msg: "Internal server error" });
 		}
 	});
@@ -342,7 +342,7 @@ const postimage = multer({storage: storage});
 			await post.save();
 			res.json(comment.likes);
 		} catch (err) {
-			console.error(err.message);
+			console.error(err.msg);
 			res.status(500).send({ msg: "Internal server error" });
 		}
 	});
@@ -429,7 +429,7 @@ const postimage = multer({storage: storage});
 	  
 		  res.json(postsWithUsers);
 		} catch (err) {
-		  res.status(500).send(err.message);
+		  res.status(500).send(err.msg);
 		}
 	});
 
@@ -477,7 +477,7 @@ const postimage = multer({storage: storage});
 	// 	  res.json({ msg: "post created", code: 200 });
 	// 	} catch (err) {
 	// 	  console.error('Error creating post:', err);
-	// 	  res.status(500).send(err.message);
+	// 	  res.status(500).send(err.msg);
 	// 	}
 	//   });	  
   
@@ -529,7 +529,7 @@ router.post('/post', postimage.any(), async function(req, res) {
     res.json({ msg: "Post created", code: 200 });
   } catch (err) {
     console.error('Error creating post:', err);
-    res.status(500).send(err.message);
+    res.status(500).send(err.msg);
   }
 });
 
