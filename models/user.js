@@ -28,6 +28,37 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'user'],
     default: 'user',
   },
+  about: {
+    type: String,
+    default: '',
+  },
+  joinedDate: {
+    type: Date,
+    default: Date.now,
+  },
+  medallions: {
+    silver: {
+      type: Number,
+      default: 0,
+    },
+    gold: {
+      type: Number,
+      default: 0,
+    },
+    platinum: {
+      type: Number,
+      default: 0,
+    },
+  },
+  followers: {
+    type: Number,
+    default: 0,
+  },
+  notoriety: {
+    type: String,
+    enum: ['Newbie', 'Explorer', 'Veteran', 'Elite', 'Legend'],
+    default: 'Newbie', // Default rank when a user signs up
+  },
   lastLogin: {
     type: Date,
     default: null,
