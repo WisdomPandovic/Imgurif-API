@@ -144,7 +144,7 @@ router.get('/user-by-username/:username', async (req, res) => {
     }
 });
 
-app.post('/api/user/:userId/follow', async (req, res) => {
+router.post('/api/user/:userId/follow', async (req, res) => {
   try {
     const { userId } = req.params;
     const currentUserId = req.body.currentUserId;
