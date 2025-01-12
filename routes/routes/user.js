@@ -144,4 +144,31 @@ router.get('/user-by-username/:username', async (req, res) => {
     }
 });
 
+app.post('/api/user/:userId/follow', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentUserId = req.body.currentUserId;
+
+    if (userId === currentUserId) {
+      return res.status(400).json({ message: "You cannot follow yourself." });
+    }
+
+    const userToFollow = await User.findById(userId);
+    const currentUser = await User.findById(currentUserId);
+
+    if (!userToFollow.followers.includes(currentUserId)) {
+      userToFollow.followers.push(currentUserId);
+      currentUser.following += 1;
+      await userToFollow.save();
+      await currentUser.save();
+      return res.status(200).json({ message: "User followed successfully." });
+    } else {
+      return res.status(400).json({ message: "You are already following this user." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred.", error });
+  }
+});
+
+
 module.exports = router;
