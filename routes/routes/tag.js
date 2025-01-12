@@ -12,7 +12,7 @@ const router = express.Router();
 			console.log('Populated tags with posts:', tag);
 			res.json(tag)
 		}catch(err){
-			res.status(500).send(err.message)
+			res.status(500).send(err.msg)
 		}
 	});
 	  
@@ -56,7 +56,7 @@ const router = express.Router();
 
             res.json(tag)
 		}catch(err){
-			res.status(500).send(err.message)
+			res.status(500).send(err.msg)
 		}
 	});
     
@@ -71,7 +71,7 @@ const router = express.Router();
 		  
 			  res.json({ msg: "Tag deleted" });
 			} catch (err) {
-			  res.status(500).send(err.message);
+			  res.status(500).send(err.msg);
 			}
 	});
 
@@ -91,7 +91,7 @@ const router = express.Router();
 		  await tag.save();
 		  res.json(tag);
 		} catch (err) {
-		  res.status(500).send(err.message);
+		  res.status(500).send(err.msg);
 		}
 	  });
 	  
