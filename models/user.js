@@ -54,11 +54,11 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-   followers: {
-    type: [mongoose.Schema.Types.ObjectId],  // Changed to array of ObjectIds
-    ref: 'users', // Reference to users collection
-    default: [],
-  },
+ followers: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'users',  // Reference to User model
+  default: []
+}],
   notoriety: {
     type: String,
     enum: ['Newbie', 'Explorer', 'Veteran', 'Elite', 'Legend'],
