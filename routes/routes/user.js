@@ -13,7 +13,7 @@ router.get('/users', async (req, res) => {
         let users = await User.find().lean();
         res.json(users);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
 });
 
@@ -26,7 +26,7 @@ router.get('/users/:id', async (req, res) => {
 
         res.json(user);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
 });
 
@@ -46,7 +46,7 @@ router.post("/users", async (req, res) => {
 
         res.json(user);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
 });
 
@@ -65,7 +65,7 @@ router.put('/users/:id', async (req, res) => {
 
         res.json(user);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
 });
 
@@ -80,7 +80,7 @@ router.delete('/user/:id', async (req, res) => {
 
         res.json({ msg: "User deleted" });
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
 });
 
@@ -89,7 +89,7 @@ router.get('/users-with-posts', async (req, res) => {
         let usersWithPosts = await User.find().populate('post').lean();
         res.json(usersWithPosts);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
 });
 
@@ -140,7 +140,7 @@ router.get('/user-by-username/:username', async (req, res) => {
 
         res.json(user);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.msg);
     }
 });
 
@@ -151,7 +151,7 @@ router.post('/user/:userId/follow', async (req, res) => {
 
         // Prevent following yourself
         if (userId === currentUserId) {
-            return res.status(400).json({ message: "You cannot follow yourself." });
+            return res.status(400).json({ msg: "You cannot follow yourself." });
         }
 
         // Find the user to follow and the current user
@@ -159,7 +159,7 @@ router.post('/user/:userId/follow', async (req, res) => {
         const currentUser = await User.findById(currentUserId);
 
         if (!userToFollow || !currentUser) {
-            return res.status(404).json({ message: "User not found." });
+            return res.status(404).json({ msg: "User not found." });
         }
 
         // Check if the current user is already following the target user
@@ -170,14 +170,14 @@ router.post('/user/:userId/follow', async (req, res) => {
             await userToFollow.save();
             await currentUser.save();
             
-            return res.status(200).json({ message: "User followed successfully." });
+            return res.status(200).json({ msg: "User followed successfully." });
         } else {
-            return res.status(400).json({ message: "You are already following this user." });
+            return res.status(400).json({ msg: "You are already following this user." });
         }
 
     } catch (error) {
         console.error("Error following user:", error); // Log the full error
-        res.status(500).json({ message: "An error occurred.", error: error.message || error });
+        res.status(500).json({ msg: "An error occurred.", error: error.msg || error });
     }
 });
 
