@@ -1,5 +1,6 @@
 const Post = require("../../models/post");
 const Comment = require("../../models/comment");
+const Notification =require("../../models/notification");
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
 const multer = require("multer");
@@ -132,13 +133,22 @@ router.put('/likes/:id', async (req, res) => {
 
 		post.likes.push(newLike);
 		await post.save();
-		res.json(post.likes);
+
+		// Create a notification for the post owner
+		const notification = new Notification({
+			message: `${USER.username} likes your post "${post.title}"`,
+			type: 'like',
+			timestamp: new Date(),
+		  });
+		  await notification.save();
+
+		res.json(post.likes);	
 	} catch (err) {
 		console.error(err.msg);
 		res.status(500).send({ msg: "Internal server error" });
 	}
 });
-
+		
 router.put('/unlike/:id', async (req, res) => {
 	try {
 		const { id } = req.params;
