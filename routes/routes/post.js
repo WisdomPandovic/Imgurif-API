@@ -564,17 +564,17 @@ router.get('/user/:userId/comments', async (req, res) => {
     const { userId } = req.params;
 
     try {
-        // Fetch user by ID to validate if the user exists
-        const user = await User.findById(userId).populate('comments.comment_user', 'username'); // Populate comment_user to get user info
+        // Fetch all comments for the specific user
+        const comments = await Comment.find({ comment_user: userId })
+            .populate('comment_user', 'username email')  // Populate the comment_user field with user details
+            .exec();
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        if (!comments.length) {
+            return res.status(404).json({ message: 'No comments found for this user' });
         }
 
-        // Access the user's comments
-        const comments = user.comments;
-        
-        res.status(200).json(comments); // Return the comments as a response
+        // Return the comments as a response
+        res.status(200).json(comments);
     } catch (error) {
         console.error('Error fetching comments:', error);
         res.status(500).json({ message: 'Error fetching comments' });
