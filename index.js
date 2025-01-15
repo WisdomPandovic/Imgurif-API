@@ -42,6 +42,7 @@ const MongoStore = require('connect-mongo');
 const userRoutes = require('./routes/routes/user'); 
 const postRoutes = require('./routes/routes/post'); 
 const tagRoutes = require('./routes/routes/tag'); 
+const notificationRoutes = require('./routes/routes/notification');
 
 const app = express();
 
@@ -87,6 +88,7 @@ app.use('/postimage', express.static(path.join(__dirname, 'public', 'postimage')
 app.use('/api', userRoutes);
 app.use('/api', postRoutes);
 app.use('/api', tagRoutes);
+app.use('/api', notificationRoutes);
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
