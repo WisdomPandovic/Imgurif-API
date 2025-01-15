@@ -570,7 +570,7 @@ router.get('/user/:userId/comments', async (req, res) => {
             .exec();
 
         if (!posts || posts.length === 0) {
-            return res.status(404).json({ message: 'No comments found for this user' });
+            return res.status(404).json({ msg: 'No comments found for this user' });
         }
 
         // Collect all comments from posts where this user commented
@@ -582,7 +582,7 @@ router.get('/user/:userId/comments', async (req, res) => {
         res.status(200).json(comments); // Return the found comments
     } catch (error) {
         console.error('Error fetching comments:', error);
-        res.status(500).json({ message: 'Error fetching comments' });
+        res.status(500).json({ msg: 'Error fetching comments' });
     }
 });
 
