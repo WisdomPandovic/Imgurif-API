@@ -560,7 +560,7 @@ router.get('/user/:username/posts', async (req, res) => {
 });
 
 // Route to get all comments for a specific user
-router.get('/user/:userId/comments', async (req, res) => {
+router.get('/user/:userId/comments-made', async (req, res) => {
     const userId = req.params.userId;
     try {
         // Find posts where the user has commented
@@ -587,7 +587,7 @@ router.get('/user/:userId/comments', async (req, res) => {
 });
 
 // Backend route to get all comments for a user across all their posts
-router.get('/user/:userId/comments', async (req, res) => {
+router.get('/user/:userId/comments-on-posts', async (req, res) => {
     const { userId } = req.params;
 
     try {
