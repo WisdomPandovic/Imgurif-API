@@ -27,6 +27,7 @@ const router = express.Router();
 require('./routes/user')(router);
 require('./routes/post')(router);
 require('./routes/tag')(router);
+require('./routes/notification')(router);
 // require('./routes/comment')(router);
 
 // Use the router
