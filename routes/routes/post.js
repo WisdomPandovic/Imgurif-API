@@ -560,29 +560,29 @@ router.get('/user/:username/posts', async (req, res) => {
 });
 
 // Route to get all comments for a specific user
-router.get('/user/:userId/comments', async (req, res) => {
-    const { userId } = req.params;
-
+router.get('/api/user/:userId/comments', async (req, res) => {
+    const userId = req.params.userId;
     try {
-        // Fetch the posts where the user is a commenter
-        const posts = await Post.find({ 'comments.comment_user': userId })
-            .populate('comments.comment_user', 'username email') // Populate user information for comments
-            .exec();
+        // Find posts where the user has commented
+        const posts = await Post.find({
+            'comments.comment_user': userId
+        })
+        .populate('comments.comment_user', 'username') // Populating the comment_user with username
+        .exec();
+        
+        // Extracting all comments made by the user from posts
+        const userComments = [];
+        posts.forEach(post => {
+            post.comments.forEach(comment => {
+                if (comment.comment_user._id.toString() === userId) {
+                    userComments.push(comment);
+                }
+            });
+        });
 
-        if (!posts || posts.length === 0) {
-            return res.status(404).json({ msg: 'No comments found for this user' });
-        }
-
-        // Collect all comments from posts where this user commented
-        const comments = posts.reduce((acc, post) => {
-            const userComments = post.comments.filter(comment => comment.comment_user.toString() === userId);
-            return [...acc, ...userComments];
-        }, []);
-
-        res.status(200).json(comments); // Return the found comments
+        res.json(userComments);
     } catch (error) {
-        console.error('Error fetching comments:', error);
-        res.status(500).json({ msg: 'Error fetching comments' });
+        res.status(500).json({ message: 'Error fetching comments', error });
     }
 });
 
