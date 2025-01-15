@@ -560,7 +560,7 @@ router.get('/user/:username/posts', async (req, res) => {
 });
 
 // Route to get all comments for a specific user
-router.get('/api/user/:userId/comments', async (req, res) => {
+router.get('/user/:userId/comments', async (req, res) => {
     const userId = req.params.userId;
     try {
         // Find posts where the user has commented
