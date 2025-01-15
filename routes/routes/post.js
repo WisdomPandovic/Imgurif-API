@@ -1,5 +1,4 @@
 const Post = require("../../models/post");
-const User = require('../../models/user');
 const Comment = require("../../models/comment");
 const Notification =require("../../models/notification");
 const mongoose = require('mongoose');
