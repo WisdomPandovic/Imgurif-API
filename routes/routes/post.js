@@ -1,4 +1,5 @@
 const Post = require("../../models/post");
+const User = require('../../models/user');
 const Comment = require("../../models/comment");
 const Notification =require("../../models/notification");
 const mongoose = require('mongoose');
@@ -358,7 +359,6 @@ router.put('/replyunlikes/:id/:commentId', async (req, res) => {
 	}
 });
 
-
 router.get('/post/tag/:tagId', async (req, res) => {
 	try {
 		const tagId = req.params.tagId;
@@ -406,29 +406,40 @@ router.get('/post/:id/views', async (req, res) => {
 });
 
 router.post('/post/:id/increment-view', async (req, res) => {
-	try {
-		const { id } = req.params;
-		const post = await Post.findById(id);
+  try {
+    const { id } = req.params;
+    const { userId } = req.body; // Accept userId from request body
 
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).json({ err: 'Invalid post ID' });
-		}
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ err: 'Invalid post ID' });
+    }
 
-		if (!post) {
-			return res.status(404).json({ err: 'Post not found' });
-		}
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ err: 'Post not found' });
+    }
 
-		if (!post.viewsIncremented) {
-			post.views += 1;
-			post.viewsIncremented = true;
-			await post.save();
-		}
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ err: 'User not found' });
+    }
 
-		res.json({ viewCount: post.views });
-	} catch (err) {
-		console.error('Error while incrementing post views:', err);
-		res.status(500).json({ err: 'Error while incrementing post views' });
-	}
+    // Increment the view count and save the post
+    post.views += 1;
+    await post.save();
+
+    // Create a new notification
+    const notification = new Notification({
+      message: `${user.username} viewed your post "${post.title}".`,
+      type: 'view',
+    });
+    await notification.save();
+
+    res.json({ success: true, viewCount: post.views });
+  } catch (err) {
+    console.error('Error while incrementing post views:', err);
+    res.status(500).json({ err: 'Error while incrementing post views' });
+  }
 });
 
 router.get('/posts-with-users', async function (req, res) {
@@ -620,6 +631,5 @@ router.get('/user/:userId/comments-on-posts', async (req, res) => {
         res.status(500).json({ message: 'Error fetching comments' });
     }
 });
-
 
 module.exports = router;
