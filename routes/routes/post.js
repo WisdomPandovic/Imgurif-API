@@ -533,5 +533,30 @@ router.post('/post', postimage.any(), async function(req, res) {
   }
 });
 
+// Get posts by username
+router.get('/user/:username/posts', async (req, res) => {
+	try {
+		const { username } = req.params;
+
+		// Find the user by username
+		const user = await User.findOne({ username });
+
+		if (!user) {
+			return res.status(404).json({ msg: "User not found" });
+		}
+
+		// Find posts associated with the user
+		const posts = await Post.find({ user: user._id })
+			.populate('tag')
+			.populate('user', 'username')
+			.lean();
+
+		res.json(posts);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ msg: "Internal server error" });
+	}
+});
+
 
 module.exports = router;
