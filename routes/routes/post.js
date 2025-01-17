@@ -1,6 +1,6 @@
 const Post = require("../../models/post");
 const Comment = require("../../models/comment");
-const Notification =require("../../models/notification");
+const Notification = require("../../models/notification");
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Types;
 const multer = require("multer");
@@ -97,74 +97,79 @@ router.delete('/post/:id', async function (req, res) {
 	}
 });
 
+// Like route
 router.put('/like/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { user } = req.body; // The user who is liking the post
+	try {
+		const { id } = req.params;
+		const { user } = req.body; // The user who is liking the post
 
-        const post = await Post.findById(id);
-        const USER = await User.findById(user);
+		const post = await Post.findById(id);
+		const USER = await User.findById(user);
 
-        if (!USER) {
-            return res.status(404).json({ msg: "User does not exist", code: 404 });
-        }
-        if (!post) {
-            return res.status(404).json({ msg: "Post does not exist", code: 404 });
-        }
+		if (!USER) {
+			return res.status(404).json({ msg: "User does not exist", code: 404 });
+		}
+		if (!post) {
+			return res.status(404).json({ msg: "Post does not exist", code: 404 });
+		}
 
-        // Check if the user has already liked the post
-        const alreadyLiked = post.likes.some(like => like.toString() === user);
-        if (alreadyLiked) {
-            return res.json({ msg: "Post already liked by this user" });
-        }
+		// Check if the user has already liked the post
+		const alreadyLiked = post.likes.includes(user);
+		if (alreadyLiked) {
+			return res.json({ msg: "Post already liked by this user" });
+		}
 
-        // Add the user to the likes array
-        post.likes.push(user);
+		// Add the user to the likes array
+		post.likes.push(user);
 
-        // Save the post with the updated likes array
-        await post.save();
+		// Save the post with the updated likes array
+		await post.save();
 
-        // Send a success response with the updated post and likes
-        res.json({ msg: "Post has been liked", post: post });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ msg: "Internal server error" });
-    }
+		// Send a success response with the updated post and likes
+		res.json({ msg: "Post has been liked", post });
+	} catch (err) {
+		console.log(err);
+		res.status(500).send({ msg: "Internal server error" });
+	}
 });
-		
+
+// Unlike route
 router.put('/unlike/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const post = await Post.findById(id);
-        const { user } = req.body;
-        const USER = await User.findById(user);
+	try {
+		const { id } = req.params;
+		const { user } = req.body; // The user who is unliking the post
 
-        if (!USER) {
-            return res.status(404).json({ msg: "User does not exist", code: 404 });
-        }
-        if (!post) {
-            return res.status(404).json({ msg: "Post does not exist", code: 404 });
-        }
+		const post = await Post.findById(id);
+		const USER = await User.findById(user);
 
-        const existingLike = await Like.findOneAndDelete({ user: USER._id, post: id });
-        if (!existingLike) {
-            return res.json({ msg: "User has not liked this post" });
-        }
-        console.log("Existing like removed:", existingLike);
+		if (!USER) {
+			return res.status(404).json({ msg: "User does not exist", code: 404 });
+		}
+		if (!post) {
+			return res.status(404).json({ msg: "Post does not exist", code: 404 });
+		}
 
-        // Find and remove the like from the post's likes array
-        post.likes = post.likes.filter(like => like.toString() !== existingLike._id.toString());
+		// Check if the user has already liked the post
+		const alreadyLiked = post.likes.includes(user);
+		if (!alreadyLiked) {
+			return res.json({ msg: "User has not liked this post" });
+		}
 
-        // Save the post after modifying its likes
-        await post.save();
+		// Remove the user from the likes array
+		post.likes = post.likes.filter(like => like.toString() !== user);
 
-        // Send the updated likes with the success message
-        res.json({ msg: "User has unliked this post", likes: post.likes });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ msg: "Internal server error" });
-    }
+		// Save the post after modifying its likes
+		await post.save();
+
+		// Send the updated likes with the success message
+		res.json({ msg: "User has unliked this post", likes: post.likes });
+	} catch (err) {
+		console.log(err);
+		res.status(500).send({ msg: "Internal server error" });
+	}
 });
+
+
 
 router.post('/comment/:id', async (req, res) => {
 	try {
@@ -387,40 +392,40 @@ router.get('/post/:id/views', async (req, res) => {
 });
 
 router.post('/post/:id/increment-view', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { userId } = req.body; // Accept userId from request body
+	try {
+		const { id } = req.params;
+		const { userId } = req.body; // Accept userId from request body
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ err: 'Invalid post ID' });
-    }
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({ err: 'Invalid post ID' });
+		}
 
-    const post = await Post.findById(id);
-    if (!post) {
-      return res.status(404).json({ err: 'Post not found' });
-    }
+		const post = await Post.findById(id);
+		if (!post) {
+			return res.status(404).json({ err: 'Post not found' });
+		}
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ err: 'User not found' });
-    }
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({ err: 'User not found' });
+		}
 
-    // Increment the view count and save the post
-    post.views += 1;
-    await post.save();
+		// Increment the view count and save the post
+		post.views += 1;
+		await post.save();
 
-    // Create a new notification
-    const notification = new Notification({
-      message: `${user.username} viewed your post "${post.title}".`,
-      type: 'view',
-    });
-    await notification.save();
+		// Create a new notification
+		const notification = new Notification({
+			message: `${user.username} viewed your post "${post.title}".`,
+			type: 'view',
+		});
+		await notification.save();
 
-    res.json({ success: true, viewCount: post.views });
-  } catch (err) {
-    console.error('Error while incrementing post views:', err);
-    res.status(500).json({ err: 'Error while incrementing post views' });
-  }
+		res.json({ success: true, viewCount: post.views });
+	} catch (err) {
+		console.error('Error while incrementing post views:', err);
+		res.status(500).json({ err: 'Error while incrementing post views' });
+	}
 });
 
 router.get('/posts-with-users', async function (req, res) {
@@ -563,54 +568,54 @@ router.get('/user/:username/posts', async (req, res) => {
 
 // Route to get all comments for a specific user
 router.get('/user/:userId/comments-made', async (req, res) => {
-    const userId = req.params.userId;
-    try {
-        // Find posts where the user has commented
-        const posts = await Post.find({
-            'comments.comment_user': userId
-        })
-        .populate('comments.comment_user', 'username') // Populating the comment_user with username
-        .exec();
-        
-        // Extracting all comments made by the user from posts
-        const userComments = [];
-        posts.forEach(post => {
-            post.comments.forEach(comment => {
-                if (comment.comment_user._id.toString() === userId) {
-                    userComments.push(comment);
-                }
-            });
-        });
+	const userId = req.params.userId;
+	try {
+		// Find posts where the user has commented
+		const posts = await Post.find({
+			'comments.comment_user': userId
+		})
+			.populate('comments.comment_user', 'username') // Populating the comment_user with username
+			.exec();
 
-        res.json(userComments);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching comments', error });
-    }
+		// Extracting all comments made by the user from posts
+		const userComments = [];
+		posts.forEach(post => {
+			post.comments.forEach(comment => {
+				if (comment.comment_user._id.toString() === userId) {
+					userComments.push(comment);
+				}
+			});
+		});
+
+		res.json(userComments);
+	} catch (error) {
+		res.status(500).json({ message: 'Error fetching comments', error });
+	}
 });
 
 // Backend route to get all comments for a user across all their posts
 router.get('/user/:userId/comments-on-posts', async (req, res) => {
-    const { userId } = req.params;
+	const { userId } = req.params;
 
-    try {
-        // Fetch all posts by the user
-        const posts = await Post.find({ user: userId }).populate('comments.comment_user', 'username');
+	try {
+		// Fetch all posts by the user
+		const posts = await Post.find({ user: userId }).populate('comments.comment_user', 'username');
 
-        if (!posts || posts.length === 0) {
-            return res.status(404).json({ message: 'No posts found for this user' });
-        }
+		if (!posts || posts.length === 0) {
+			return res.status(404).json({ message: 'No posts found for this user' });
+		}
 
-        // Collect all comments from the user's posts
-        const allComments = posts.reduce((comments, post) => {
-            return comments.concat(post.comments);
-        }, []);
+		// Collect all comments from the user's posts
+		const allComments = posts.reduce((comments, post) => {
+			return comments.concat(post.comments);
+		}, []);
 
-        // Return all comments
-        res.status(200).json(allComments);
-    } catch (error) {
-        console.error('Error fetching comments:', error);
-        res.status(500).json({ message: 'Error fetching comments' });
-    }
+		// Return all comments
+		res.status(200).json(allComments);
+	} catch (error) {
+		console.error('Error fetching comments:', error);
+		res.status(500).json({ message: 'Error fetching comments' });
+	}
 });
 
 module.exports = router;
