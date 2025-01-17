@@ -155,38 +155,37 @@ router.put('/likes/:id', async (req, res) => {
 });
 		
 router.put('/unlike/:id', async (req, res) => {
-	try {
-		const { id } = req.params;
-		const post = await Post.findById(id);
-		const { user } = req.body;
-		const USER = await User.findById(user);
+    try {
+        const { id } = req.params;
+        const post = await Post.findById(id);
+        const { user } = req.body;
+        const USER = await User.findById(user);
 
-		if (!USER) {
-			return res.status(404).json({ msg: "User does not exist", code: 404 });
-		}
-		if (!post) {
-			return res.status(404).json({ msg: "Post does not exist", code: 404 });
-		}
+        if (!USER) {
+            return res.status(404).json({ msg: "User does not exist", code: 404 });
+        }
+        if (!post) {
+            return res.status(404).json({ msg: "Post does not exist", code: 404 });
+        }
 
-		const existingLike = await Like.findOneAndDelete({ user: USER._id, post: id });
-		if (!existingLike) {
-			return res.json({ msg: "User has not liked this post" });
-		}
-		console.log("Existing like removed:", existingLike);
+        const existingLike = await Like.findOneAndDelete({ user: USER._id, post: id });
+        if (!existingLike) {
+            return res.json({ msg: "User has not liked this post" });
+        }
+        console.log("Existing like removed:", existingLike);
 
-		post.likes = post.likes.filter(like => like.toString() !== existingLike._id.toString());
+        // Find and remove the like from the post's likes array
+        post.likes = post.likes.filter(like => like.toString() !== existingLike._id.toString());
 
-		const RemoveLike = post.likes.some(like => like.user.toString() === USER);
-		//  console.log(RemoveLike)
-		post.likes.splice(RemoveLike, 1);
-		await post.save();
+        // Save the post after modifying its likes
+        await post.save();
 
-		res.json(post.likes);
-
-	} catch (err) {
-		console.log(err.msg);
-		res.status(500).send({ msg: "Internal server error" });
-	}
+        // Send the updated likes with the success message
+        res.json({ msg: "User has unliked this post", likes: post.likes });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: "Internal server error" });
+    }
 });
 
 router.post('/comment/:id', async (req, res) => {
