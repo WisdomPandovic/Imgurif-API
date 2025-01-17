@@ -97,61 +97,39 @@ router.delete('/post/:id', async function (req, res) {
 	}
 });
 
-router.put('/likes/:id', async (req, res) => {
-	try {
-		const { id } = req.params;
-		console.log('Request received to like post with ID:', id);
+router.put('/like/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { user } = req.body; // The user who is liking the post
 
-		const post = await Post.findById(id);
-		console.log('Retrieved post:', post);
+        const post = await Post.findById(id);
+        const USER = await User.findById(user);
 
-		const { user } = req.body;
-		console.log('User ID from request body:', user);
+        if (!USER) {
+            return res.status(404).json({ msg: "User does not exist", code: 404 });
+        }
+        if (!post) {
+            return res.status(404).json({ msg: "Post does not exist", code: 404 });
+        }
 
-		if (!user) {
-			return res.status(400).json({ msg: "User ID is required in the request body", code: 400 });
-		}
+        // Check if the user has already liked the post
+        const alreadyLiked = post.likes.some(like => like.toString() === user);
+        if (alreadyLiked) {
+            return res.json({ msg: "Post already liked by this user" });
+        }
 
-		const USER = await User.findById(user);
+        // Add the user to the likes array
+        post.likes.push(user);
 
-		if (!USER) {
-			return res.status(404).json({ msg: "User does not exist", code: 404 });
-		}
+        // Save the post with the updated likes array
+        await post.save();
 
-		if (!post) {
-			return res.status(404).json({ msg: "Post does not exist", code: 404 });
-		}
-
-		const existingLike = await Like.findOne({ user: user, post: id });
-
-		if (existingLike) {
-			return res.json({ msg: "Post already liked by this user" });
-		}
-
-		// Create new like entry
-		const newLike = new Like({ user: user, post: id });
-		await newLike.save();
-
-		// Add the like to the post's likes array
-		post.likes.push(newLike);
-		await post.save();
-
-		// Create a notification for the post owner
-		const notification = new Notification({
-			message: `${USER.username} likes your post "${post.title}"`,
-			type: 'like',
-			timestamp: new Date(),
-		});
-		await notification.save();
-
-		// Send the updated post back (not just likes)
-		const updatedPost = await Post.findById(id).populate('likes');  // Ensure likes are populated
-		res.json(updatedPost);
-
-	} catch (err) {
-		console.error(err.msg);
-		res.status(500).send({ msg: "Internal server error" });
-	}
+        // Send a success response with the updated post and likes
+        res.json({ msg: "Post has been liked", post: post });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ msg: "Internal server error" });
+    }
 });
 		
 router.put('/unlike/:id', async (req, res) => {
