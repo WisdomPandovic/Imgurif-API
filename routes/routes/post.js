@@ -396,10 +396,17 @@ router.post('/post/:id/increment-view', async (req, res) => {
 		const { id } = req.params;
 		const { userId } = req.body; // Accept userId from request body
 
+		// Validate postId
 		if (!mongoose.Types.ObjectId.isValid(id)) {
 			return res.status(400).json({ err: 'Invalid post ID' });
 		}
 
+		// Validate userId
+		if (!mongoose.Types.ObjectId.isValid(userId)) {
+			return res.status(400).json({ err: 'Invalid user ID' });
+		}
+
+		// Fetch the post and user
 		const post = await Post.findById(id);
 		if (!post) {
 			return res.status(404).json({ err: 'Post not found' });
