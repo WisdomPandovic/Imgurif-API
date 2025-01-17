@@ -128,9 +128,11 @@ router.put('/likes/:id', async (req, res) => {
 			return res.json({ msg: "Post already liked by this user" });
 		}
 
+		// Create new like entry
 		const newLike = new Like({ user: user, post: id });
 		await newLike.save();
 
+		// Add the like to the post's likes array
 		post.likes.push(newLike);
 		await post.save();
 
@@ -139,10 +141,13 @@ router.put('/likes/:id', async (req, res) => {
 			message: `${USER.username} likes your post "${post.title}"`,
 			type: 'like',
 			timestamp: new Date(),
-		  });
-		  await notification.save();
+		});
+		await notification.save();
 
-		res.json(post.likes);	
+		// Send the updated post back (not just likes)
+		const updatedPost = await Post.findById(id).populate('likes');  // Ensure likes are populated
+		res.json(updatedPost);
+
 	} catch (err) {
 		console.error(err.msg);
 		res.status(500).send({ msg: "Internal server error" });
