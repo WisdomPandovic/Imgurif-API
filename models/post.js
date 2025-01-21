@@ -19,6 +19,7 @@ const PostSchema = new mongoose.Schema({
             reply_user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' }
         }],
     }],
+    mature: { type: Boolean, default: false },
     date: { type: Date, default: Date.now }
 });
 
