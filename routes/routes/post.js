@@ -495,7 +495,7 @@ router.post('/post', postimage.any(), async function (req, res) {
 		console.log('Received request', req.body);
 		console.log('Received files', req.files);
 
-		const { title, description, tag, user, imagepath } = req.body;
+		const { title, description, tag, user, imagepath, mature } = req.body;
 
 		// Validate user ID
 		if (!ObjectId.isValid(user)) {
@@ -521,6 +521,7 @@ router.post('/post', postimage.any(), async function (req, res) {
 			user,
 			image: imagepath,
 			views: 0,
+			mature: mature === 'true' // Convert string to boolean (assuming request sends it as a string)
 		});
 
 		console.log('Post to be saved:', post);
