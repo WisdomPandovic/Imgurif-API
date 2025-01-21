@@ -620,10 +620,13 @@ router.get('/user/:userId/comments-on-posts', async (req, res) => {
 	}
 });
 
-router.get('/posts/popular', (req, res) => {
-	Post.find({}).sort({ likes: -1 }).limit(10).exec((err, posts) => {
-		if (err) return res.status(500).json({ message: 'Error fetching posts' });
-		res.json(posts);
-	});
+router.get('/posts/popular', async (req, res) => {
+  try {
+    const posts = await Post.find({}).sort({ likes: -1 }).limit(10);
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching posts', error: err });
+  }
 });
+
 module.exports = router;
