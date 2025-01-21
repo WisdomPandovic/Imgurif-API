@@ -28,7 +28,7 @@ const router = express.Router();
 		//   console.log('Fetched tag:', tag);
 
 		 let data = {
-			 title: tag.title,
+			 title: tag.name,
 			 id:tag.id,
 			 post: tag.post
 		 }
