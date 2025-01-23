@@ -115,8 +115,14 @@ router.post('/login', async (req, res) => {
 
         if (isPasswordValid) {
             // Passwords match, handle successful login
-            // Optionally, you can include user details in the response
-            res.json({ success: true, msg: 'Login successful', user });
+            // Update the lastLogin field with the current date/time
+            user.lastLogin = Date.now();
+            await user.save();
+
+            // Optionally, you can exclude password from the user data before sending it to the client
+            const { password: _, ...userData } = user.toObject();
+
+            res.json({ success: true, msg: 'Login successful', user: userData });
         } else {
             // Passwords don't match, handle unsuccessful login
             console.log("Password is invalid");
