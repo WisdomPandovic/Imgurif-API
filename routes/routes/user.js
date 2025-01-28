@@ -43,6 +43,7 @@ router.post("/users", async (req, res) => {
         });
 
         await user.save();
+        console.log("User saved with hashed password:", user.password);
 
         res.json(user);
     } catch (err) {
