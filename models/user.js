@@ -74,28 +74,13 @@ const UserSchema = new mongoose.Schema({
   }],
 });
 
-// Method to compare passwords
-UserSchema.methods.comparePassword = async function(candidatePassword) {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
-    throw error;
-  }
-};
-
-// Method to change password
-UserSchema.methods.changePassword = async function(currentPassword, newPassword) {
-  const isMatch = await this.comparePassword(currentPassword);
-  if (!isMatch) {
-    throw new Error('Current password is incorrect');
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(newPassword, salt);
-
-  await this.save();
-};
+// Hash password before saving (using bcrypt with a reasonable salt rounds)
+UserSchema.pre('save', async function (next) {
+  const salt = await bcrypt.genSalt(10); // Adjust salt rounds as needed
+  this.password = await bcrypt.hash(this.password, salt);
+  console.log('Hashed password:', this.password); 
+  next();
+});
 
 const User = mongoose.model("users",UserSchema)
  module.exports = User;
-
