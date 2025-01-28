@@ -105,7 +105,12 @@ router.post('/login', async (req, res) => {
 
         if (!user) {
             console.log("User not found in the database");
-            return res.status(404).json({ msg: 'Invalid username or password' });
+            return res.status(404).json({ msg: 'Invalid username' });
+        }
+
+        if (!password) {
+            console.log("Password not found in the database");
+            return res.status(404).json({ msg: 'Invalid  password' });
         }
 
         console.log("Retrieved hashed password from the database:", user.password);
