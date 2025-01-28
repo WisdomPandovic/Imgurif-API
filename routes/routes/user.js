@@ -188,5 +188,15 @@ router.post('/user/:userId/follow', async (req, res) => {
     }
 });
 
+// Test the bcrypt.compare function
+async function testPasswordComparison() {
+  const plaintextPassword = 'Password';  // Password used for login attempt
+  const storedHash = '$2a$10$7KwS04FcTR07vs4M5oJ6SOgvnGbxbhr83xUnmxYhLCq1K9LHeLLv.';  // Retrieved from DB
+
+  const isMatch = await bcrypt.compare(plaintextPassword, storedHash);
+  console.log('Password Comparison Result:', isMatch);
+}
+
+testPasswordComparison();
 
 module.exports = router;
