@@ -96,6 +96,7 @@ router.get('/users-with-posts', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
+         console.log(req.body)
         console.log("Received login request with username:", username, "and password:", password);
 
         // Find the user by username
