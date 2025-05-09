@@ -75,12 +75,12 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Hash password before saving (using bcrypt with a reasonable salt rounds)
-UserSchema.pre('save', async function (next) {
-  const salt = await bcrypt.genSalt(10); // Adjust salt rounds as needed
-  this.password = await bcrypt.hash(this.password, salt);
-  console.log('Hashed password:', this.password); 
-  next();
-});
+// UserSchema.pre('save', async function (next) {
+//   const salt = await bcrypt.genSalt(10); // Adjust salt rounds as needed
+//   this.password = await bcrypt.hash(this.password, salt);
+//   console.log('Hashed password:', this.password); 
+//   next();
+// });
 
 const User = mongoose.model("users",UserSchema)
  module.exports = User;
