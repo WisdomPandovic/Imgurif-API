@@ -34,20 +34,44 @@ router.post("/users", async (req, res) => {
     try {
         const { username, email, phoneNumber, password, role } = req.body;
 
+         // Email format validation
+         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         if (!emailRegex.test(email)) {
+             return res.status(400).json({ error: "Invalid email format." });
+         }
+ 
+         // Check if email is already used
+         const existingUser = await User.findOne({ email: email.toLowerCase() });
+         if (existingUser) {
+             return res.status(400).json({ error: "Email is already registered." });
+         }
+
+         // Password validation
+        const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({
+                error: "Password must be at least 8 characters long and contain at least one special character."
+            });
+        }
+
+        // Hash password before saving
+        const salt = await bcrypt.genSalt(10); // Adjust salt rounds as needed
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const user = new User({
             username,
             email: email.toLowerCase(),
             phoneNumber,
-            password, 
+            password: hashedPassword, 
             role,
         });
 
         await user.save();
-        console.log("User saved with hashed password:", user.password);
 
         res.json(user);
     } catch (err) {
-        res.status(500).send(err.msg);
+        console.error("❌ Error in POST /users:", err); // Log full error
+        res.status(500).json({ error: "Internal server error" }); // Send safe response
     }
 });
 
